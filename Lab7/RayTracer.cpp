@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include "Sphere.h"
 #include "Plane.h"
+#include "Cylinder.h"
 #include "TextureBMP.h"
 #include "SceneObject.h"
 #include "Ray.h"
@@ -48,13 +49,15 @@ glm::vec3 trace(Ray ray, int step)
     if(ray.index == -1) return backgroundCol;		//no intersection
 	obj = sceneObjects[ray.index];					//object on which the closest point of intersection is found
 
-	//Stripe pattern
-	if (ray.index == 3)
+	//Index of checked plane
+	if (ray.index == 4)
 	{
-		//Stripe pattern
+		//Checkered pattern
 		int stripeWidth = 5;
+		int stripeHeight = 5;
 		int iz = (ray.hit.z) / stripeWidth;
-		int k = iz % 2; //2 colors
+		int ix = (ray.hit.x) / stripeHeight;
+		int k = (iz + ix) % 2; //2 colors
 		if (k == 0) color = glm::vec3(0, 1, 0);
 		else color = glm::vec3(1, 1, 0.5);
 		obj->setColor(color);
@@ -157,18 +160,24 @@ void initialize()
 
 	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -90.0), 15.0);
 	sphere1->setColor(glm::vec3(0, 0, 1));   //Set colour to blue
-	sphere1->setReflectivity(true, 0.8);
+	//sphere1->setReflectivity(true, 0.8);
+	sphere1->setTransparency(true);
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
 
-	Sphere* sphere2 = new Sphere(glm::vec3(-2.0, 0.0, -70.0), 2.0);
+	Sphere* sphere2 = new Sphere(glm::vec3(5, 5, -70.0), 4.0);
 	sphere2->setColor(glm::vec3(0, 1, 1));   //Set colour to blue
 	sphere2->setShininess(5);
 	sceneObjects.push_back(sphere2);		 //Add sphere to scene objects
 
-	Sphere* sphere3 = new Sphere(glm::vec3(-0.0, 0.0, -80.0), 5.0);
+	Sphere* sphere3 = new Sphere(glm::vec3(5, -10, -60.0), 5.0);
 	sphere3->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
 	sphere3->setSpecularity(false);
 	sceneObjects.push_back(sphere3);		 //Add sphere to scene objects
+
+	Sphere* sphere4 = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
+	sphere4->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
+	sphere4->setSpecularity(false);
+	sceneObjects.push_back(sphere4);		 //Add sphere to scene objects
 
 	Plane* plane = new Plane(glm::vec3(-20., -15, -40), //Point A
 		glm::vec3(20., -15, -40), //Point B
@@ -176,6 +185,52 @@ void initialize()
 		glm::vec3(-20., -15, -200)); //Point D'
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
+
+	//Box code
+	float radius = 7.5;
+	float x = 2.5;
+	float y = 2.5;
+	float z = -62.5;
+	glm::vec3 frontTopLeft = glm::vec3(x - radius, y + radius, z + radius);
+	glm::vec3 frontTopRight = glm::vec3(x + radius, y + radius, z + radius);
+	glm::vec3 frontBottomLeft = glm::vec3(x - radius, y - radius, z + radius);
+	glm::vec3 frontBottomRight = glm::vec3(x + radius, y - radius, z + radius);
+	glm::vec3 backTopLeft = glm::vec3(x - radius, y + radius, z - radius);
+	glm::vec3 backTopRight = glm::vec3(x + radius, y + radius, z - radius);
+	glm::vec3 backBottomLeft = glm::vec3(x - radius, y - radius, z - radius);
+	glm::vec3 backBottomRight = glm::vec3(x + radius, y - radius, z - radius);
+
+
+	Plane* boxSideTop = new Plane(
+		frontTopLeft,
+		frontTopRight,
+		backTopRight,
+		backTopLeft);
+
+	Plane* boxSideBottom = new Plane(
+		frontBottomLeft,
+		frontBottomRight,
+		backBottomRight,
+		backBottomLeft);
+
+	Plane* boxSideLeft = new Plane(
+		frontTopLeft,
+		frontBottomLeft,
+		backTopLeft,
+		backBottomLeft);
+
+	Plane* boxSideFront = new Plane(
+		frontTopLeft,
+		frontBottomLeft,
+		frontTopRight,
+		frontBottomRight);
+
+	sceneObjects.push_back(boxSideTop);
+	sceneObjects.push_back(boxSideBottom);
+	sceneObjects.push_back(boxSideFront);
+	sceneObjects.push_back(boxSideLeft);
+
+
 
 	texture = TextureBMP("Butterfly.bmp");
 
