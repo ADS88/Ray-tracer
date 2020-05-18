@@ -144,6 +144,23 @@ void display()
 }
 
 
+void createPyramid()
+{
+	glm::vec3 frontLeft = glm::vec3(0., 5, -40); //Front left corner
+	glm::vec3 frontRight = glm::vec3(2., 5, -40); //Front right corner
+	glm::vec3 backMiddle = glm::vec3(1., 5, -42); //Back middle corner
+	glm::vec3 top = glm::vec3(1, 6, -41);
+
+	Plane* pyramidBase = new Plane(frontLeft, frontRight, backMiddle); 
+	Plane* pyramidLeft = new Plane(frontLeft, top, backMiddle);
+	Plane* pyramidRight = new Plane(frontRight, top, backMiddle);
+	Plane* pyramidFront = new Plane(frontLeft, frontRight, top);
+
+	sceneObjects.push_back(pyramidBase);
+	sceneObjects.push_back(pyramidLeft);
+	sceneObjects.push_back(pyramidRight);
+	sceneObjects.push_back(pyramidFront);
+}
 
 //---This function initializes the scene ------------------------------------------- 
 //   Specifically, it creates scene objects (spheres, planes, cones, cylinders etc)
@@ -186,47 +203,8 @@ void initialize()
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
 
-	Plane* pyramidBase = new Plane(
-		glm::vec3(0., 5, -40), //Front left corner
-		glm::vec3(2., 5, -40), //Front right corner
-		glm::vec3(1., 5, -42)); //Back middle corner
-	pyramidBase->setSpecularity(false);
-	
-	sceneObjects.push_back(pyramidBase);
-
-
-	Plane* pyramidLeft = new Plane(
-		glm::vec3(0., 5, -40), //Point A
-		glm::vec3(1., 6, -41), //Point B
-		glm::vec3(1., 5, -42)); //Point D'
-	pyramidLeft->setSpecularity(false);
-	sceneObjects.push_back(pyramidLeft);
-
-	Plane* pyramidRight = new Plane(
-		glm::vec3(2., 5, -40),
-		glm::vec3(1., 5, -42),
-		glm::vec3(1., 6, -41)
-		); //Point D'
-
-	pyramidRight->setSpecularity(false);
-	sceneObjects.push_back(pyramidRight);
-
-	Plane* pyramidFront = new Plane(
-		glm::vec3(0., 5, -40), //Bottom left
-		glm::vec3(2., 5, -40), //Bottom right
-		glm::vec3(1., 6, -41)); //Top middle
-	pyramidFront->setSpecularity(false);
-	sceneObjects.push_back(pyramidFront);
-
-	
-	
-
-
-
+	createPyramid();
 	texture = TextureBMP("Butterfly.bmp");
-
-
-
 }
 
 
