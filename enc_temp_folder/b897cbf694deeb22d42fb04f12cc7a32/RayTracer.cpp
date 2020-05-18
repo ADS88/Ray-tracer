@@ -147,6 +147,8 @@ void display()
 void createPyramid(glm::vec3 center, float radius)
 {
 
+	//Center (1,5,-41) //Radius 1
+
 	glm::vec3 frontLeft = glm::vec3(center.x - radius, center.y, center.z + radius); //Front left corner
 	glm::vec3 frontRight = glm::vec3(center.x + radius, center.y, center.z + radius); //Front right corner
 	glm::vec3 backMiddle = glm::vec3(center.x, center.y, center.z - radius); //Back middle corner
