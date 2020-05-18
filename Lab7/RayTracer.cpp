@@ -30,6 +30,8 @@ const float XMIN = -WIDTH * 0.5;
 const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
+const float FOGZ1 = -40;
+const float FOGZ2 = -400;
 
 vector<SceneObject*> sceneObjects;
 
@@ -50,7 +52,7 @@ glm::vec3 trace(Ray ray, int step)
 	obj = sceneObjects[ray.index];					//object on which the closest point of intersection is found
 
 	//Index of checked plane
-	if (ray.index == 4)
+	if (ray.index == 2)
 	{
 		//Checkered pattern
 		int stripeWidth = 5;
@@ -63,17 +65,17 @@ glm::vec3 trace(Ray ray, int step)
 		obj->setColor(color);
 
 		//Add code for texture mapping here
-		int x1 = -15;
-		int x2 = 5;
-		int z1 = -60;
-		int z2 = -90;
+		//int x1 = -15;
+		//int x2 = 5;
+		//int z1 = -60;
+		//int z2 = -90;
 
-		float texcoords = (ray.hit.x - x1) / (x2 - x1);
-		float texcoordt = (ray.hit.z - z1) / (z2 - z1);
-			if (texcoords > 0 && texcoords < 1 && texcoordt > 0 && texcoordt < 1){
-				color = texture.getColorAt(texcoords, texcoordt);
-				obj->setColor(color);
-			}
+		//float texcoords = (ray.hit.x - x1) / (x2 - x1);
+		//float texcoordt = (ray.hit.z - z1) / (z2 - z1);
+		//	if (texcoords > 0 && texcoords < 1 && texcoordt > 0 && texcoordt < 1){
+		//		color = texture.getColorAt(texcoords, texcoordt);
+		//		obj->setColor(color);
+		//	}
 	}
 
 
@@ -99,6 +101,13 @@ glm::vec3 trace(Ray ray, int step)
 		glm::vec3 reflectedColor = trace(reflectedRay, step + 1);
 		color = color + (rho * reflectedColor);
 	}
+
+
+	//Fog
+	glm::vec3 fogColour = glm::vec3(1, 1, 1);
+	float t = (ray.hit.z - FOGZ1) / (FOGZ2 - FOGZ1);
+	color = (1 - t) * color + t * fogColour;
+
 	return color;
 }
 
@@ -144,7 +153,7 @@ void display()
 }
 
 
-void createPyramid(glm::vec3 center, float radius)
+void createPyramid(glm::vec3 center, float radius, glm::vec3 colour)
 {
 
 	glm::vec3 frontLeft = glm::vec3(center.x - radius, center.y, center.z + radius); //Front left corner
@@ -156,6 +165,11 @@ void createPyramid(glm::vec3 center, float radius)
 	Plane* pyramidLeft = new Plane(frontLeft, top, backMiddle);
 	Plane* pyramidRight = new Plane(frontRight, top, backMiddle);
 	Plane* pyramidFront = new Plane(frontLeft, frontRight, top);
+
+	pyramidBase->setColor(colour);  
+	pyramidLeft->setColor(colour);   
+	pyramidRight->setColor(colour);   
+	pyramidFront->setColor(colour);  
 
 	sceneObjects.push_back(pyramidBase);
 	sceneObjects.push_back(pyramidLeft);
@@ -176,35 +190,26 @@ void initialize()
 
     glClearColor(0, 0, 0, 1);
 
-	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -90.0), 15.0);
+	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -190.0), 8.0);
 	sphere1->setColor(glm::vec3(0, 0, 1));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
 	sphere1->setTransparency(true);
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
 
-	Sphere* sphere2 = new Sphere(glm::vec3(5, 5, -70.0), 4.0);
-	sphere2->setColor(glm::vec3(0, 1, 1));   //Set colour to blue
-	sphere2->setShininess(5);
-	sceneObjects.push_back(sphere2);		 //Add sphere to scene objects
-
-	Sphere* sphere3 = new Sphere(glm::vec3(5, -10, -60.0), 5.0);
-	sphere3->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
-	sphere3->setSpecularity(false);
-	sceneObjects.push_back(sphere3);		 //Add sphere to scene objects
 
 	Sphere* sphere4 = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
 	sphere4->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
 	sphere4->setSpecularity(false);
 	sceneObjects.push_back(sphere4);		 //Add sphere to scene objects
 
-	Plane* plane = new Plane(glm::vec3(-20., -15, -40), //Point A
-		glm::vec3(20., -15, -40), //Point B
-		glm::vec3(20., -15, -200), //Point C
-		glm::vec3(-20., -15, -200)); //Point D'
+	Plane* plane = new Plane(glm::vec3(-50., -15, -40), //Point A
+		glm::vec3(50., -15, -40), //Point B
+		glm::vec3(50., -15, -200), //Point C
+		glm::vec3(-50., -15, -200)); //Point D'
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
 
-	createPyramid(glm::vec3(1, 5, -41), 5.0);
+	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
 	texture = TextureBMP("Butterfly.bmp");
 }
 
