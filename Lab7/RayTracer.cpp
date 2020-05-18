@@ -186,49 +186,40 @@ void initialize()
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
 
-	//Box code
-	float radius = 7.5;
-	float x = 2.5;
-	float y = 2.5;
-	float z = -62.5;
-	glm::vec3 frontTopLeft = glm::vec3(x - radius, y + radius, z + radius);
-	glm::vec3 frontTopRight = glm::vec3(x + radius, y + radius, z + radius);
-	glm::vec3 frontBottomLeft = glm::vec3(x - radius, y - radius, z + radius);
-	glm::vec3 frontBottomRight = glm::vec3(x + radius, y - radius, z + radius);
-	glm::vec3 backTopLeft = glm::vec3(x - radius, y + radius, z - radius);
-	glm::vec3 backTopRight = glm::vec3(x + radius, y + radius, z - radius);
-	glm::vec3 backBottomLeft = glm::vec3(x - radius, y - radius, z - radius);
-	glm::vec3 backBottomRight = glm::vec3(x + radius, y - radius, z - radius);
+	Plane* pyramidBase = new Plane(
+		glm::vec3(0., 5, -40), //Front left corner
+		glm::vec3(2., 5, -40), //Front right corner
+		glm::vec3(1., 5, -42)); //Back middle corner
+	pyramidBase->setSpecularity(false);
+	
+	sceneObjects.push_back(pyramidBase);
 
 
-	Plane* boxSideTop = new Plane(
-		frontTopLeft,
-		frontTopRight,
-		backTopRight,
-		backTopLeft);
+	Plane* pyramidLeft = new Plane(
+		glm::vec3(0., 5, -40), //Point A
+		glm::vec3(1., 6, -41), //Point B
+		glm::vec3(1., 5, -42)); //Point D'
+	pyramidLeft->setSpecularity(false);
+	sceneObjects.push_back(pyramidLeft);
 
-	Plane* boxSideBottom = new Plane(
-		frontBottomLeft,
-		frontBottomRight,
-		backBottomRight,
-		backBottomLeft);
+	Plane* pyramidRight = new Plane(
+		glm::vec3(2., 5, -40),
+		glm::vec3(1., 5, -42),
+		glm::vec3(1., 6, -41)
+		); //Point D'
 
-	Plane* boxSideLeft = new Plane(
-		frontTopLeft,
-		frontBottomLeft,
-		backTopLeft,
-		backBottomLeft);
+	pyramidRight->setSpecularity(false);
+	sceneObjects.push_back(pyramidRight);
 
-	Plane* boxSideFront = new Plane(
-		frontTopLeft,
-		frontBottomLeft,
-		frontTopRight,
-		frontBottomRight);
+	Plane* pyramidFront = new Plane(
+		glm::vec3(0., 5, -40), //Bottom left
+		glm::vec3(2., 5, -40), //Bottom right
+		glm::vec3(1., 6, -41)); //Top middle
+	pyramidFront->setSpecularity(false);
+	sceneObjects.push_back(pyramidFront);
 
-	sceneObjects.push_back(boxSideTop);
-	sceneObjects.push_back(boxSideBottom);
-	sceneObjects.push_back(boxSideFront);
-	sceneObjects.push_back(boxSideLeft);
+	
+	
 
 
 
