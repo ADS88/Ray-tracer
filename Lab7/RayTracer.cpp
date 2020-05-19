@@ -59,6 +59,9 @@ glm::vec3 trace(Ray ray, int step)
 		int stripeHeight = 5;
 		int iz = (ray.hit.z) / stripeWidth;
 		int ix = (ray.hit.x) / stripeHeight;
+		if (ray.hit.x > 0) {
+			ix += 1;
+		}
 		int k = (iz + ix) % 2; //2 colors
 		if (k == 0) color = glm::vec3(0, 1, 0);
 		else color = glm::vec3(1, 1, 0.5);
