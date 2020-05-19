@@ -87,7 +87,13 @@ glm::vec3 trace(Ray ray, int step)
 	Ray shadowRay(ray.hit, lightVec);
 	shadowRay.closestPt(sceneObjects);
 	if (shadowRay.index > -1 && shadowRay.dist < glm::length(lightVec)) {
-		color = 0.2f * obj->getColor(); //0.2 = ambient scale factor
+		if (sceneObjects[shadowRay.index]->isTransparent() || sceneObjects[shadowRay.index]->isRefractive()) {
+			color = 0.8f * obj->getColor(); //0.8 = ambient scale factor
+		}
+		else {
+
+			color = 0.2f * obj->getColor(); //0.2 = ambient scale factor
+		}
 	}
 
 
@@ -103,7 +109,9 @@ glm::vec3 trace(Ray ray, int step)
 	}
 
 	if (obj->isTransparent() && step < MAX_STEPS) {
-		Ray outRay = Ray(ray.hit, ray.dir);
+		Ray sphereRay = Ray(ray.hit, ray.dir);
+		sphereRay.closestPt(sceneObjects);
+		Ray outRay = Ray(sphereRay.hit, ray.dir);
 		color = color + obj->getTransparencyCoeff() * trace(outRay, step + 1);
 	}
 
@@ -218,7 +226,7 @@ void initialize()
 	transparentSphere->setColor(glm::vec3(0.8, 0.8, 0.8));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
 	transparentSphere->setTransparency(true, 0.99);
-	transparentSphere->setReflectivity(true, 0.01);
+	transparentSphere->setReflectivity(true);
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
