@@ -31,7 +31,7 @@ const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
 const float FOGZ1 = -40;
-const float FOGZ2 = -400;
+const float FOGZ2 = -600;
 
 vector<SceneObject*> sceneObjects;
 
@@ -100,6 +100,11 @@ glm::vec3 trace(Ray ray, int step)
 		Ray reflectedRay(ray.hit, reflectedDir);
 		glm::vec3 reflectedColor = trace(reflectedRay, step + 1);
 		color = color + (rho * reflectedColor);
+	}
+
+	if (obj->isTransparent() && step < MAX_STEPS) {
+		Ray outRay = Ray(ray.hit, ray.dir);
+		color = color + obj->getTransparencyCoeff() * trace(outRay, step + 1);
 	}
 
 
@@ -193,8 +198,8 @@ void initialize()
 	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -190.0), 8.0);
 	sphere1->setColor(glm::vec3(0, 0, 1));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
-	sphere1->setTransparency(true);
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
+
 
 
 	Sphere* sphere4 = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
@@ -208,6 +213,13 @@ void initialize()
 		glm::vec3(-50., -15, -200)); //Point D'
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
+
+	Sphere* transparentSphere = new Sphere(glm::vec3(-5.0, -10.0, -60.0), 3.0);
+	transparentSphere->setColor(glm::vec3(0.8, 0.8, 0.8));   //Set colour to blue
+	//sphere1->setReflectivity(true, 0.8);
+	transparentSphere->setTransparency(true, 0.99);
+	transparentSphere->setReflectivity(true, 0.01);
+	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
 	texture = TextureBMP("Butterfly.bmp");
