@@ -25,6 +25,10 @@ using namespace std;
 
 TextureBMP texture;
 
+const float AIR_INDEX = 1.0;
+const float GLASS_INDEX = 1.33;
+const float ETA = AIR_INDEX/ GLASS_INDEX;
+
 const float WIDTH = 20.0;  
 const float HEIGHT = 20.0;
 const float EDIST = 40.0;
@@ -70,25 +74,11 @@ glm::vec3 trace(Ray ray, int step)
 		if (k == 0) color = glm::vec3(0, 1, 0);
 		else color = glm::vec3(1, 1, 0.5);
 		obj->setColor(color);
-
-		//Add code for texture mapping here
-		//int x1 = -15;
-		//int x2 = 5;
-		//int z1 = -60;
-		//int z2 = -90;
-
-		//float texcoords = (ray.hit.x - x1) / (x2 - x1);
-		//float texcoordt = (ray.hit.z - z1) / (z2 - z1);
-		//	if (texcoords > 0 && texcoords < 1 && texcoordt > 0 && texcoordt < 1){
-		//		color = texture.getColorAt(texcoords, texcoordt);
-		//		obj->setColor(color);
-		//	}
 	}
 
 	if (ray.index == 1) {
 		glm::vec3 center = glm::vec3(10.0, 10.0, -60.0);
 		glm::vec3 centerVector = glm::vec3(ray.hit.x - center.x, ray.hit.y - center.y, ray.hit.z - center.z);
-		//centerVector = glm::normalize(centerVector);
 		
 		float texcoords = 0.5f + atan2(centerVector.x, centerVector.z) / (2 * M_PI);
 		float texcoordt = 0.5f - asin(centerVector.y / 3.0) / M_PI;
@@ -127,11 +117,25 @@ glm::vec3 trace(Ray ray, int step)
 		color = color + (rho * reflectedColor);
 	}
 
+	//Transparency
 	if (obj->isTransparent() && step < MAX_STEPS) {
 		Ray sphereRay = Ray(ray.hit, ray.dir);
 		sphereRay.closestPt(sceneObjects);
 		Ray outRay = Ray(sphereRay.hit, ray.dir);
 		color = color + obj->getTransparencyCoeff() * trace(outRay, step + 1);
+	}
+
+	//Refraction
+	if (obj->isRefractive() && step < MAX_STEPS) {
+		glm::vec3 normal = obj->normal(ray.hit);
+		glm::vec3 g = glm::refract(ray.dir, normal, ETA);
+		Ray refrRay(ray.hit, g);
+		refrRay.closestPt(sceneObjects);
+		glm::vec3 m = obj->normal(refrRay.hit);
+		glm::vec3 h = glm::refract(g, -m, 1.0f / ETA);
+		Ray outRay(refrRay.hit, h);
+
+		color = color + obj->getRefractionCoeff() * trace(outRay, step + 1);
 	}
 
 
@@ -242,10 +246,17 @@ void initialize()
 
 	Sphere* transparentSphere = new Sphere(glm::vec3(-5.0, -10.0, -60.0), 3.0);
 	transparentSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
-	//sphere1->setReflectivity(true, 0.8);
+	sphere1->setReflectivity(true, 0.8);
 	transparentSphere->setTransparency(true, 0.9);
-	transparentSphere->setReflectivity(true, 0.3);
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
+
+	Sphere* refractiveSphere = new Sphere(glm::vec3(5.0, -10.0, -60.0), 3.0);
+	refractiveSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
+	//sphere1->setReflectivity(true, 0.8);
+	//refractiveSphere->setTransparency(true, 0.9);
+	refractiveSphere->setReflectivity(true, 0.3);
+	refractiveSphere->setRefractivity(true);
+	sceneObjects.push_back(refractiveSphere);		 //Add sphere to scene objects
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
 
