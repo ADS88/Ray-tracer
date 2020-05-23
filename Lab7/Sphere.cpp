@@ -9,6 +9,10 @@
 #include "Sphere.h"
 #include <math.h>
 
+glm::vec3 Sphere::getCenter() {
+    return center;
+}
+
 /**
 * Sphere's intersection method.  The input is a ray. 
 */

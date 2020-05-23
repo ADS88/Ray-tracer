@@ -6,6 +6,8 @@
 * See Lab07.pdf, Lab08.pdf for details.
 *===================================================================================
 */
+
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -17,6 +19,8 @@
 #include "SceneObject.h"
 #include "Ray.h"
 #include <GL/freeglut.h>
+
+
 using namespace std;
 
 TextureBMP texture;
@@ -79,6 +83,18 @@ glm::vec3 trace(Ray ray, int step)
 		//		color = texture.getColorAt(texcoords, texcoordt);
 		//		obj->setColor(color);
 		//	}
+	}
+
+	if (ray.index == 1) {
+		glm::vec3 center = glm::vec3(10.0, 10.0, -60.0);
+		glm::vec3 centerVector = glm::vec3(ray.hit.x - center.x, ray.hit.y - center.y, ray.hit.z - center.z);
+		//centerVector = glm::normalize(centerVector);
+		
+		float texcoords = 0.5f + atan2(centerVector.x, centerVector.z) / (2 * M_PI);
+		float texcoordt = 0.5f - asin(centerVector.y / 3.0) / M_PI;
+
+		color = texture.getColorAt(texcoords, texcoordt);
+		obj->setColor(color);
 	}
 
 
@@ -213,10 +229,9 @@ void initialize()
 
 
 
-	Sphere* sphere4 = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
-	sphere4->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
-	sphere4->setSpecularity(false);
-	sceneObjects.push_back(sphere4);		 //Add sphere to scene objects
+	Sphere* texturedSphere = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
+	texturedSphere->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
+	sceneObjects.push_back(texturedSphere);		 //Add sphere to scene objects
 
 	Plane* plane = new Plane(glm::vec3(-50., -15, -40), //Point A
 		glm::vec3(50., -15, -40), //Point B
@@ -226,17 +241,17 @@ void initialize()
 	sceneObjects.push_back(plane);
 
 	Sphere* transparentSphere = new Sphere(glm::vec3(-5.0, -10.0, -60.0), 3.0);
-	transparentSphere->setColor(glm::vec3(0.8, 0.8, 0.8));   //Set colour to blue
+	transparentSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
-	transparentSphere->setTransparency(true, 0.99);
-	transparentSphere->setReflectivity(true);
+	transparentSphere->setTransparency(true, 0.9);
+	transparentSphere->setReflectivity(true, 0.3);
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
 
 	//Cylinder* cylinder = new Cylinder(glm::vec3(0, -10, -60), 1, 2);
 	//sceneObjects.push_back(cylinder);
-	texture = TextureBMP("Butterfly.bmp");
+	texture = TextureBMP("ball.bmp");
 }
 
 
