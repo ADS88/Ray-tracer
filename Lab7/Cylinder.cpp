@@ -14,25 +14,48 @@
 */
 float Cylinder::intersect(glm::vec3 p0, glm::vec3 dir)
 {
-    float a = (dir.x * dir.x) + (dir.z * dir.z);
-    float b = 2 * (dir.x * (p0.x - center.x) + dir.z * (p0.z - center.z));
-    float c = (p0.x - center.x) * (p0.x - center.x) + (p0.z - center.z) * (p0.z - center.z) - (radius * radius);
+	glm::vec3 d = p0 - center;
+	float a = (dir.x * dir.x) + (dir.z * dir.z);
+	float b = 2 * (dir.x * d.x + dir.z * d.z);
+	float c = d.x * d.x + d.z * d.z - (radius * radius);
 
-    float delta = b * b - 4 * (a * c);
-    if (fabs(delta) < 0.001) return -1.0;
-    if (delta < 0.0) return -1.0;
+	float discriminant = b * b - 4 * (a * c);
 
-    float t1 = (-b - sqrt(delta)) / (2 * a);
-    float t2 = (-b + sqrt(delta)) / (2 * a);
-    float t;
+	if (discriminant < 0.0 || (fabs(discriminant)) < 0.001) {
+		return -1.0;
+	}
 
-    if (t1 > t2) t = t2;
-    else t = t1;
 
-    float r = p0.y + t * dir.y;
+	float t1 = (-b - sqrt(discriminant)) / (2 * a);
+	float t2 = (-b + sqrt(discriminant)) / (2 * a);
 
-    if ((r >= center.y) and (r <= center.y + height))return t;
-    else return -1;
+	if (t1 < 0.01) t1 = -1;
+	if (t2 < 0.01) t2 = -1;
+
+	float tClose;
+	float tFar;
+	
+	if (t1 > t2) {
+		tClose = t2;
+		tFar = t1;
+	}
+	else {
+		tClose = t1;
+		tFar = t2;
+	}
+
+
+	float y = p0.y + dir.y * tClose;
+	if ((y >= center.y) && (y <= center.y + height)) {
+		return tClose;
+	}
+	else {
+		y = p0.y + dir.y * tFar;
+		if ((y >= center.y) && (y <= center.y + height)) {
+			return tFar;
+		}
+	}
+	return -1.0;
 }
 
 /**
