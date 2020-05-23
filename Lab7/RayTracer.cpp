@@ -233,6 +233,9 @@ void initialize()
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
+
+	//Cylinder* cylinder = new Cylinder(glm::vec3(0, -10, -60), 1, 2);
+	//sceneObjects.push_back(cylinder);
 	texture = TextureBMP("Butterfly.bmp");
 }
 
