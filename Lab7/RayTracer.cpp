@@ -30,6 +30,9 @@ const float AIR_INDEX = 1.0;
 const float GLASS_INDEX = 1.33;
 const float ETA = AIR_INDEX/ GLASS_INDEX;
 
+const float BALL_RADIUS = 3.0;
+const glm::vec3 BALL_CENTER = glm::vec3(10.0, 10.0, -60.0);
+
 const float WIDTH = 20.0;  
 const float HEIGHT = 20.0;
 const float EDIST = 40.0;
@@ -78,11 +81,10 @@ glm::vec3 trace(Ray ray, int step)
 	}
 
 	if (ray.index == 1) {
-		glm::vec3 center = glm::vec3(10.0, 10.0, -60.0);
-		glm::vec3 centerVector = glm::vec3(ray.hit.x - center.x, ray.hit.y - center.y, ray.hit.z - center.z);
+		glm::vec3 centerVector = glm::vec3(ray.hit.x - BALL_CENTER.x, ray.hit.y - BALL_CENTER.y, ray.hit.z - BALL_CENTER.z);
 		
 		float texcoords = 0.5f + atan2(centerVector.x, centerVector.z) / (2 * M_PI);
-		float texcoordt = 0.5f - asin(centerVector.y / 3.0) / M_PI;
+		float texcoordt = 0.5f - asin(centerVector.y / BALL_RADIUS) / M_PI;
 
 		color = texture.getColorAt(texcoords, texcoordt);
 		obj->setColor(color);
@@ -233,7 +235,7 @@ void initialize()
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
 
 
-	Sphere* texturedSphere = new Sphere(glm::vec3(10.0, 10.0, -60.0), 3.0);
+	Sphere* texturedSphere = new Sphere(BALL_CENTER, BALL_RADIUS);
 	texturedSphere->setColor(glm::vec3(1, 0, 1));   //Set colour to blue
 	sceneObjects.push_back(texturedSphere);		 //Add sphere to scene objects
 
