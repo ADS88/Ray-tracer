@@ -190,9 +190,9 @@ void display()
 
 		    Ray ray = Ray(eye, dir);
 
-			glm::vec3 col = antiAlias(eye, cellX, xp, yp);
+			//glm::vec3 col = antiAlias(eye, cellX, xp, yp);
 
-		    //glm::vec3 col = trace (ray, 1); //Trace the primary ray and get the colour value
+		    glm::vec3 col = trace (ray, 1); //Trace the primary ray and get the colour value
 			glColor3f(col.r, col.g, col.b);
 			glVertex2f(xp, yp);				//Draw each cell with its color value
 			glVertex2f(xp+cellX, yp);
