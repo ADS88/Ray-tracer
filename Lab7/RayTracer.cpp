@@ -15,6 +15,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "TextureBMP.h"
 #include "SceneObject.h"
 #include "Ray.h"
@@ -259,6 +260,9 @@ void initialize()
 
 	Cylinder* cylinder = new Cylinder(glm::vec3(0, -10, -60), 2, 2);
 	sceneObjects.push_back(cylinder);
+
+	Cone* cone = new Cone(glm::vec3(0, 10, -60), 2, 2);
+	sceneObjects.push_back(cone);
 
 	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
 

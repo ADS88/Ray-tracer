@@ -20,31 +20,17 @@ float Cylinder::intersect(glm::vec3 p0, glm::vec3 dir)
 	float c = d.x * d.x + d.z * d.z - (radius * radius);
 
 	float discriminant = b * b - 4 * (a * c);
-
-	if (discriminant < 0.0 || (fabs(discriminant)) < 0.001) {
-		return -1.0;
-	}
-
+	if (discriminant < 0.0 || (fabs(discriminant)) < 0.001) return -1.0;
 
 	float t1 = (-b - sqrt(discriminant)) / (2 * a);
-	float t2 = (-b + sqrt(discriminant)) / (2 * a);
-
 	if (t1 < 0.01) t1 = -1;
+
+	float t2 = (-b + sqrt(discriminant)) / (2 * a);
 	if (t2 < 0.01) t2 = -1;
 
-	float tClose;
-	float tFar;
+	float tClose = fmin(t1, t2);
+	float tFar = fmax(t1, t2);
 	
-	if (t1 > t2) {
-		tClose = t2;
-		tFar = t1;
-	}
-	else {
-		tClose = t1;
-		tFar = t2;
-	}
-
-
 	float y = p0.y + dir.y * tClose;
 	if ((y >= center.y) && (y <= center.y + height)) {
 		return tClose;
