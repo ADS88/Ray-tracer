@@ -151,15 +151,36 @@ glm::vec3 trace(Ray ray, int step)
 }
 
 //Splits pixel into 4 and draws ray through each quarter
-glm::vec3 antiAlias(glm::vec3 eye, float cellWidth, float xp, float yp) {
+glm::vec3 antiAlias(glm::vec3 eye, float cellWidth, float xp, float yp, bool adaptiveSampling, int step) {
 	float oneQuarter = cellWidth * 0.25;
 	float threeQuarters = cellWidth * 0.75;
 
-	Ray bottomLeft = Ray(eye, glm::vec3(xp + oneQuarter, yp + oneQuarter, -EDIST));
-	Ray topLeft = Ray(eye, glm::vec3(xp + oneQuarter, yp + threeQuarters, -EDIST));
-	Ray bottomRight = Ray(eye, glm::vec3(xp + threeQuarters, yp + oneQuarter, -EDIST));
-	Ray topRight = Ray(eye, glm::vec3(xp + threeQuarters, yp + threeQuarters, -EDIST));
-	return (trace(bottomLeft, 1) + trace(topLeft, 1) + trace(bottomRight, 1) + trace(topRight, 1)) * glm::vec3(0.25);
+	glm::vec3 bottomLeftColour = trace(Ray(eye, glm::vec3(xp + oneQuarter, yp + oneQuarter, -EDIST)), 1);
+	glm::vec3 topLeftColour = trace(Ray(eye, glm::vec3(xp + oneQuarter, yp + threeQuarters, -EDIST)), 1);
+	glm::vec3 bottomRightColour = trace(Ray(eye, glm::vec3(xp + threeQuarters, yp + oneQuarter, -EDIST)) , 1);
+	glm::vec3 topRightColour = trace(Ray(eye, glm::vec3(xp + threeQuarters, yp + threeQuarters, -EDIST)), 1);
+	
+	glm::vec3 averageColour = (bottomLeftColour + topLeftColour + bottomRightColour + topRightColour) * glm::vec3(0.25);
+	
+
+	if (adaptiveSampling && step < 2) {
+		glm::vec3 colours[4] = { bottomLeftColour, topLeftColour, bottomRightColour, topRightColour };
+		float xArray[4] = {xp + oneQuarter, xp+oneQuarter, xp + threeQuarters, xp+ threeQuarters};
+		float yArray[4] = {yp + oneQuarter, yp+threeQuarters, yp + oneQuarter, yp + threeQuarters};
+
+		for (int i = 0; i < 4; i++) {
+			glm::vec3 colourDifference = colours[i] - averageColour;
+			if (glm::length(colourDifference) > 0.2) {
+				//colours[i] = antiAlias(eye, cellWidth / 2, xArray[i], yArray[i], true, step + 1);
+				colours[i] = antiAlias(eye, cellWidth / 2, xArray[i] - oneQuarter, yArray[i] - oneQuarter, true, step + 1);
+
+			}
+		}
+		averageColour = (colours[0] + colours[1] + colours[2] + colours[3]) * glm::vec3(0.25);
+	}
+
+
+	return averageColour;
 }
 
 //---The main display module -----------------------------------------------------------
@@ -190,7 +211,7 @@ void display()
 
 		    Ray ray = Ray(eye, dir);
 
-			glm::vec3 col = antiAlias(eye, cellX, xp, yp);
+			glm::vec3 col = antiAlias(eye, cellX, xp, yp, false, 0);
 
 		    //glm::vec3 col = trace (ray, 1); //Trace the primary ray and get the colour value
 			glColor3f(col.r, col.g, col.b);
