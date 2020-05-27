@@ -266,7 +266,7 @@ void initialize()
 
 	Sphere *sphere1 = new Sphere(glm::vec3(0.0, 0.0, -100.0), 15.0);
 	sphere1->setColor(glm::vec3(0, 0, 1));   //Set colour to blue
-	//sphere1->setReflectivity(true, 0.8);
+	sphere1->setReflectivity(true, 0.8);
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
 
 
@@ -283,14 +283,13 @@ void initialize()
 
 	Sphere* transparentSphere = new Sphere(glm::vec3(-6.5, -10.0, -60.0), 3.0);
 	transparentSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
-	sphere1->setReflectivity(true, 0.8);
+	transparentSphere->setReflectivity(true, 0.1);
 	transparentSphere->setTransparency(true, 0.9);
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
 	Sphere* refractiveSphere = new Sphere(glm::vec3(6.5, -10.0, -60.0), 3.0);
 	refractiveSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
-	//sphere1->setReflectivity(true, 0.8);
-	//refractiveSphere->setTransparency(true, 0.9);
+	refractiveSphere->setTransparency(true, 0.1);
 	refractiveSphere->setReflectivity(true, 0.3);
 	refractiveSphere->setRefractivity(true);
 	sceneObjects.push_back(refractiveSphere);		 //Add sphere to scene objects
@@ -298,7 +297,7 @@ void initialize()
 	Cylinder* cylinder = new Cylinder(glm::vec3(-8, -10, -80), 2, 10);
 	sceneObjects.push_back(cylinder);
 
-	Cone* cone = new Cone(glm::vec3(0, 14, -100), 4, 4);
+	Cone* cone = new Cone(glm::vec3(0, -10.0, -60), 2, 2);
 	sceneObjects.push_back(cone);
 
 	createPyramid(glm::vec3(-8, 0, -80), 3.0, glm::vec3(0,1,1));
