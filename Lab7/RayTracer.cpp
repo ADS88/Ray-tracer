@@ -45,7 +45,7 @@ const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
 const float YMAX =  HEIGHT * 0.5;
 const float FOGZ1 = -40;
-const float FOGZ2 = -600;
+const float FOGZ2 = -200;
 
 vector<SceneObject*> sceneObjects;
 
@@ -295,9 +295,11 @@ void initialize()
 	sceneObjects.push_back(refractiveSphere);		 //Add sphere to scene objects
 
 	Cylinder* cylinder = new Cylinder(glm::vec3(-8, -10, -80), 2, 10);
+	cylinder->setColor(glm::vec3(1, 1, 0.5));   //Set colour to yellow
 	sceneObjects.push_back(cylinder);
 
 	Cone* cone = new Cone(glm::vec3(0, -10.0, -60), 2, 2);
+	cone->setColor(glm::vec3(1, 0.75, 0.8));   //Set colour to pink
 	sceneObjects.push_back(cone);
 
 	createPyramid(glm::vec3(-8, 0, -80), 3.0, glm::vec3(0,1,1));
