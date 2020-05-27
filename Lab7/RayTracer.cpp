@@ -31,13 +31,15 @@ const float GLASS_INDEX = 1.33;
 const float ETA = AIR_INDEX/ GLASS_INDEX;
 
 const float BALL_RADIUS = 3.0;
-const glm::vec3 BALL_CENTER = glm::vec3(10.0, 10.0, -60.0);
+const glm::vec3 BALL_CENTER = glm::vec3(10.0, 5.0, -60.0);
 
 const float WIDTH = 20.0;  
 const float HEIGHT = 20.0;
 const float EDIST = 40.0;
 const int NUMDIV = 500;
 const int MAX_STEPS = 5;
+//const int MAX_STEPS = 2;
+//const int NUMDIV = 350;
 const float XMIN = -WIDTH * 0.5;
 const float XMAX =  WIDTH * 0.5;
 const float YMIN = -HEIGHT * 0.5;
@@ -171,9 +173,7 @@ glm::vec3 antiAlias(glm::vec3 eye, float cellWidth, float xp, float yp, bool ada
 		for (int i = 0; i < 4; i++) {
 			glm::vec3 colourDifference = colours[i] - averageColour;
 			if (glm::length(colourDifference) > 0.2) {
-				//colours[i] = antiAlias(eye, cellWidth / 2, xArray[i], yArray[i], true, step + 1);
 				colours[i] = antiAlias(eye, cellWidth / 2, xArray[i] - oneQuarter, yArray[i] - oneQuarter, true, step + 1);
-
 			}
 		}
 		averageColour = (colours[0] + colours[1] + colours[2] + colours[3]) * glm::vec3(0.25);
@@ -211,9 +211,9 @@ void display()
 
 		    Ray ray = Ray(eye, dir);
 
-			glm::vec3 col = antiAlias(eye, cellX, xp, yp, false, 0);
-
+			glm::vec3 col = antiAlias(eye, cellX, xp, yp, true, 0);
 		    //glm::vec3 col = trace (ray, 1); //Trace the primary ray and get the colour value
+
 			glColor3f(col.r, col.g, col.b);
 			glVertex2f(xp, yp);				//Draw each cell with its color value
 			glVertex2f(xp+cellX, yp);
@@ -264,7 +264,7 @@ void initialize()
 
     glClearColor(0, 0, 0, 1);
 
-	Sphere *sphere1 = new Sphere(glm::vec3(-5.0, 0.0, -190.0), 8.0);
+	Sphere *sphere1 = new Sphere(glm::vec3(0.0, 0.0, -100.0), 15.0);
 	sphere1->setColor(glm::vec3(0, 0, 1));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
 	sceneObjects.push_back(sphere1);		 //Add sphere to scene objects
@@ -281,13 +281,13 @@ void initialize()
 	plane->setSpecularity(false);
 	sceneObjects.push_back(plane);
 
-	Sphere* transparentSphere = new Sphere(glm::vec3(-7.5, -10.0, -60.0), 3.0);
+	Sphere* transparentSphere = new Sphere(glm::vec3(-6.5, -10.0, -60.0), 3.0);
 	transparentSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
 	sphere1->setReflectivity(true, 0.8);
 	transparentSphere->setTransparency(true, 0.9);
 	sceneObjects.push_back(transparentSphere);		 //Add sphere to scene objects
 
-	Sphere* refractiveSphere = new Sphere(glm::vec3(7.5, -10.0, -60.0), 3.0);
+	Sphere* refractiveSphere = new Sphere(glm::vec3(6.5, -10.0, -60.0), 3.0);
 	refractiveSphere->setColor(glm::vec3(0.2, 0.2, 0.2));   //Set colour to blue
 	//sphere1->setReflectivity(true, 0.8);
 	//refractiveSphere->setTransparency(true, 0.9);
@@ -295,13 +295,13 @@ void initialize()
 	refractiveSphere->setRefractivity(true);
 	sceneObjects.push_back(refractiveSphere);		 //Add sphere to scene objects
 
-	Cylinder* cylinder = new Cylinder(glm::vec3(0, -10, -60), 2, 2);
+	Cylinder* cylinder = new Cylinder(glm::vec3(-8, -10, -80), 2, 10);
 	sceneObjects.push_back(cylinder);
 
-	Cone* cone = new Cone(glm::vec3(0, 10, -60), 2, 2);
+	Cone* cone = new Cone(glm::vec3(0, 14, -100), 4, 4);
 	sceneObjects.push_back(cone);
 
-	createPyramid(glm::vec3(1, -5, -60), 3.0, glm::vec3(0,1,1));
+	createPyramid(glm::vec3(-8, 0, -80), 3.0, glm::vec3(0,1,1));
 
 	texture = TextureBMP("ball.bmp");
 }
